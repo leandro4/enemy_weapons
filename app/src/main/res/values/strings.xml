@@ -1,4 +1,10 @@
 <resources>
+
     <string name="app_name">EnemyWeapons</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">EnemyWeapons</string>
+
+    <string name="toast_permission_needed">Necesita permisos para acceder a su localización</string>
+    <string name="gps_inactived">GPS Desactivado!</string>
+    <string name="gps_actived">GPS activado</string>
+
 </resources>
