@@ -27,7 +27,7 @@ public class LocationService extends Service {
         Intent intent = new Intent(Constants.SERVICE_INT);
         Bundle extras = new Bundle();
         if (location != null) {
-            extras.putDouble(Constants.SERVICE_LOCATION_ALT, location.getAltitude());
+            extras.putDouble(Constants.SERVICE_LOCATION_LAT, location.getLatitude());
             extras.putDouble(Constants.SERVICE_LOCATION_LONG, location.getLongitude());
         }
         intent.putExtras(extras);

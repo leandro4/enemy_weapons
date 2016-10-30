@@ -2,6 +2,7 @@ package ar.com.leandro.enemyweapons;
 
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 /**

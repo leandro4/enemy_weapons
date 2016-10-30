@@ -15,7 +15,10 @@ public class Constants {
 
     // Service
     static final public String SERVICE_INT = "service_intent";
-    static final public String SERVICE_LOCATION_ALT = "location_altitude";
+    static final public String SERVICE_LOCATION_LAT = "location_latitude";
     static final public String SERVICE_LOCATION_LONG = "location_longitude";
 
+    // api URL
+    static final public String SERVER_URL = "https://redarmyserver.appspot.com/_ah/api/myApi/v1/torretinfocollection";
+    static final public String REQUEST_TAG = "weapons_request_tag";
 }
