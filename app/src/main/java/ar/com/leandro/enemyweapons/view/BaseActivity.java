@@ -27,20 +27,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                Snackbar.make(snackBarHolder, getString(R.string.permission_needed_snack_bar), Snackbar.LENGTH_INDEFINITE).setAction(R.string.btn_snack_bar_permission, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ActivityCompat.requestPermissions(BaseActivity.this, new String[]{permission}, requestCode);
+                    }
+                }).show();
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                    Snackbar.make(snackBarHolder, getString(R.string.permission_needed_snack_bar), Snackbar.LENGTH_INDEFINITE).setAction(R.string.btn_snack_bar_permission, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ActivityCompat.requestPermissions(BaseActivity.this, new String[]{permission}, requestCode);
-                        }
-                    }).show();
-
-                } else {
-
-                    ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
-
-                }
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
             }
         } else {
             switch (requestCode) {

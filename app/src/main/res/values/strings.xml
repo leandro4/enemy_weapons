@@ -7,9 +7,10 @@
     <string name="gps_inactived">GPS Desactivado!</string>
     <string name="gps_actived">GPS activado</string>
 
-    <string name="permission_needed_snack_bar">Agregar permiso</string>
+    <string name="permission_needed_snack_bar">DEBE proporcionar permisos de Ubicacion!</string>
     <string name="btn_snack_bar_permission">OK!</string>
 
     <string name="searching_weapons">Escaneando armas enemigas...</string>
+    <string name="min_distance_danger_zone">Minima distancia zona peligrosa: [X]mts</string>
 
 </resources>

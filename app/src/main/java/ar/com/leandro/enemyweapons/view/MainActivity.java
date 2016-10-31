@@ -1,15 +1,22 @@
 package ar.com.leandro.enemyweapons.view;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.TransitionDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,30 +54,46 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseActivity implements OnMapReadyCallback,
         Response.Listener<JSONObject>, Response.ErrorListener {
 
-    @BindView(R.id.coordenadas)
-    TextView coordenadas;
     @BindView(R.id.progres_view)
     RelativeLayout popup;
+    @BindView(R.id.rl_danger_screen)
+    RelativeLayout dangerScreen;
+    @BindView(R.id.tv_distance_danger_zone)
+    TextView tvDistanceDangerZone;
 
     ArrayList<WeaponItem> weapons = new ArrayList<>();
 
     private GoogleMap mMap;
     private BroadcastReceiver receiver;
+    private boolean dangerPosition = false;
     private boolean firstLocation = true;
+    private float minDistanceToDangerZone = -1;
 
     private static final int mapZoom = 14;
+
+    // transition color for dangerous position
+    int colorFrom;
+    int colorTo;
+    boolean changed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
+        snackBarHolder = findViewById(R.id.rl_content);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        snackBarHolder = findViewById(R.id.rl_content);
+        initializeBroadcastRec();
 
+        colorFrom = ColorHelper.getColor(this, R.color.transparent_background);
+        colorTo = ColorHelper.getColor(this, R.color.danger_background);
+    }
+
+    private void initializeBroadcastRec() {
         // recibimos nuestra localizacion y calculamos las distancias a las armas enemigas
         receiver = new BroadcastReceiver() {
             @Override
@@ -84,11 +107,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback,
 
                 if (firstLocation)
                     gotoMyLocation(new LatLng(latitude, longitude));
+                tvDistanceDangerZone.setText(getString(R.string.min_distance_danger_zone)
+                        .replace("[X]", String.valueOf((int) minDistanceToDangerZone)));
             }
         };
     }
 
-    private void gotoMyLocation (LatLng latLng) {
+    private void gotoMyLocation (final LatLng latLng) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, mapZoom);
         mMap.animateCamera(cameraUpdate);
         firstLocation = false;
@@ -97,14 +122,16 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        popup.setVisibility(View.VISIBLE);
         WeaponsInfoRequest.getInstance(this).get(Constants.REQUEST_TAG, Constants.SERVER_URL, this, this);
+
         enableLocation();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        popup.setVisibility(View.VISIBLE);
         LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
                 new IntentFilter(Constants.SERVICE_INT));
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, Constants.REQUEST_LOCATION_PERMISSION);
@@ -139,11 +166,27 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback,
     }
 
     private void calculateDistances(Location myLocation) {
+        minDistanceToDangerZone = -1;
+
         for (WeaponItem weaponItem : weapons) {
-            if (myLocation.distanceTo(weaponItem.getGeoLocation()) <= weaponItem.getRadiusInMeter()) {
-                alertDangerPosition();
-                break;
+            float distance = myLocation.distanceTo(weaponItem.getGeoLocation());
+            if (minDistanceToDangerZone == -1)
+                minDistanceToDangerZone = distance - weaponItem.getRadiusInMeter();
+
+            if (distance  <= weaponItem.getRadiusInMeter()) {
+                if (!dangerPosition) {
+                    dangerPosition = true;
+                    alertDangerPosition(true);
+                }
+                minDistanceToDangerZone = 0;
+                return;
             }
+            if (distance - weaponItem.getRadiusInMeter() < minDistanceToDangerZone)
+                minDistanceToDangerZone = distance - weaponItem.getRadiusInMeter();
+        }
+        if (dangerPosition) {
+            alertDangerPosition(false);
+            dangerPosition = false;
         }
     }
 
@@ -177,13 +220,44 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback,
             mMap.addCircle(new CircleOptions()
                     .center(latLng)
                     .radius(weapon.getRadiusInMeter())
-                    .strokeWidth(3)
+                    .strokeWidth(2)
                     .strokeColor(ColorHelper.getColor(this, R.color.orange))
                     .fillColor(ColorHelper.getColor(this, R.color.overlay_orange)));
         }
     }
 
-    private void alertDangerPosition() {
+    private void alertDangerPosition(boolean danger) {
+        if (danger) {
+            dangerScreen.setVisibility(View.VISIBLE);
+            setRedAlertScreen();
+        }
+        else
+            dangerScreen.setVisibility(View.GONE);
+    }
 
+    private void setRedAlertScreen() {
+        if (dangerScreen.getVisibility() == View.VISIBLE) {
+            Handler alertHandler = new Handler(Looper.getMainLooper());
+            final Runnable runnable = new Runnable() {
+                public void run() {
+                    dangerScreen.setBackgroundColor(colorTo);
+                    invertColors();
+                    setRedAlertScreen();
+                }
+            };
+            alertHandler.postDelayed(runnable, 1200);
+        }
+    }
+
+    private void invertColors() {
+        if (changed) {
+            colorFrom = ColorHelper.getColor(this, R.color.transparent_background);
+            colorTo = ColorHelper.getColor(this, R.color.danger_background);
+            changed = false;
+        } else {
+            colorFrom = ColorHelper.getColor(this, R.color.danger_background);
+            colorTo = ColorHelper.getColor(this, R.color.transparent_background);
+            changed = true;
+        }
     }
 }

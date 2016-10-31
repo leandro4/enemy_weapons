@@ -13,15 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/coordenadas"
-        android:text="cooordenadas..."
-        android:textSize="16sp"
-        android:textColor="#000000"
-        android:layout_margin="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <RelativeLayout
         android:id="@+id/progres_view"
         android:visibility="gone"
@@ -56,5 +47,28 @@
         </RelativeLayout>
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:background="#A9FFFFFF"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_distance_danger_zone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_danger_screen"
+        android:visibility="gone"
+        android:background="@color/transparent_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

@@ -10,4 +10,7 @@
     <color name="orange">#fff17a0a</color>
     <color name="overlay_orange">#40f17a0a</color>
 
+    <color name="danger_background">#A0FF000D</color>
+    <color name="transparent_background">#00FFFFFF</color>
+
 </resources>
