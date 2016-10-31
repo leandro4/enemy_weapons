@@ -1,5 +1,7 @@
 package ar.com.leandro.enemyweapons.backend.data;
 
+import android.location.Location;
+
 import java.io.Serializable;
 
 /**
@@ -54,6 +56,14 @@ public class WeaponItem implements Serializable {
 
     public void setKind(String kind) {
         this.kind = kind;
+    }
+
+    public android.location.Location getGeoLocation() {
+        android.location.Location geoLocation = new android.location.Location("");
+        geoLocation.setLatitude(this.location.latitude);
+        geoLocation.setLongitude(this.location.longitude);
+
+        return geoLocation;
     }
 
     public class Location {

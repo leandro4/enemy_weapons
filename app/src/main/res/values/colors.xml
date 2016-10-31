@@ -3,4 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="grey">#ffffff</color>
+    <color name="overlay_black">#3e000000</color>
+
+    <color name="orange">#fff17a0a</color>
+    <color name="overlay_orange">#40f17a0a</color>
+
 </resources>

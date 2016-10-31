@@ -10,4 +10,6 @@
     <string name="permission_needed_snack_bar">Agregar permiso</string>
     <string name="btn_snack_bar_permission">OK!</string>
 
+    <string name="searching_weapons">Escaneando armas enemigas...</string>
+
 </resources>

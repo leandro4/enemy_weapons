@@ -42,4 +42,7 @@ dependencies {
 
     // gson - json library converter
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    // circular progress bar
+    compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
 }
